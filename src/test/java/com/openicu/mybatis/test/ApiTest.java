@@ -1,7 +1,11 @@
 package com.openicu.mybatis.test;
 
 import com.openicu.mybatis.binding.MapperProxyFactory;
+import com.openicu.mybatis.binding.MapperRegister;
+import com.openicu.mybatis.session.SqlSession;
+import com.openicu.mybatis.session.defaults.DefaultSqlSessionFactory;
 import com.openicu.mybatis.test.dao.IUserDao;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,17 +20,22 @@ public class ApiTest {
 
     private Logger logger = LoggerFactory.getLogger(ApiTest.class);
 
-    public static void main(String[] args) {
-        MapperProxyFactory<IUserDao> factory = new MapperProxyFactory<>(IUserDao.class);
-        HashMap<String, String> sqlSession = new HashMap<>();
+    @Test
+    public void test_MapperProxyFactory() {
 
-        sqlSession.put("com.openicu.mybatis.test.dao.IUserDao.queryUserName","模拟执行 Mapper.xml 中 SQL 语句的操作:查询用户姓名");
-        sqlSession.put("com.openicu.mybatis.test.dao.IUserDao.queryUserAge","模拟执行 Mapper.xml 中 SQL 语句的操作:查询用户年纪");
+        // 1.注册 Mapper
+        MapperRegister mapperRegister = new MapperRegister();
+        mapperRegister.addMapper("com.openicu.mybatis.test.dao");
 
-        IUserDao userDao = factory.newInstance(sqlSession);
+        // 2.从 sqlSession 工厂获取 Session
+        DefaultSqlSessionFactory factory = new DefaultSqlSessionFactory(mapperRegister);
+        SqlSession sqlSession = factory.openSession();
 
+        // 3.获取映射器对象
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+
+        // 4.测试验证
         String res = userDao.queryUserName("10001");
         System.out.println(res);
-
     }
 }
