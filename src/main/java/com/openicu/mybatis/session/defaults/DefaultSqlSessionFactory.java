@@ -1,6 +1,7 @@
 package com.openicu.mybatis.session.defaults;
 
 import com.openicu.mybatis.binding.MapperRegister;
+import com.openicu.mybatis.session.Configuration;
 import com.openicu.mybatis.session.SqlSession;
 import com.openicu.mybatis.session.SqlSessionFactory;
 
@@ -11,14 +12,14 @@ import com.openicu.mybatis.session.SqlSessionFactory;
  */
 public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
-    private MapperRegister mapperRegister;
+    private Configuration configuration;
 
-    public DefaultSqlSessionFactory(MapperRegister mapperRegister) {
-        this.mapperRegister = mapperRegister;
+    public DefaultSqlSessionFactory(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
     public SqlSession openSession() {
-        return new DefaultSqlSession(mapperRegister);
+        return new DefaultSqlSession(configuration);
     }
 }

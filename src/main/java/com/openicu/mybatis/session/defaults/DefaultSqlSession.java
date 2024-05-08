@@ -1,6 +1,8 @@
 package com.openicu.mybatis.session.defaults;
 
 import com.openicu.mybatis.binding.MapperRegister;
+import com.openicu.mybatis.mapping.MappedStatement;
+import com.openicu.mybatis.session.Configuration;
 import com.openicu.mybatis.session.SqlSession;
 
 /**
@@ -11,12 +13,12 @@ import com.openicu.mybatis.session.SqlSession;
 public class DefaultSqlSession implements SqlSession {
 
     /**
-     * 映射器注册机
+     * 配置类
      */
-    private MapperRegister mapperRegister;
+    private Configuration configuration;
 
-    public DefaultSqlSession(MapperRegister mapperRegister) {
-        this.mapperRegister = mapperRegister;
+    public DefaultSqlSession(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
@@ -26,11 +28,18 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T selectOne(String statement, Object parameter) {
-        return (T)("你被代理了！"+"方法"+statement + " 入参:"+parameter);
+        MappedStatement mappedStatement = configuration.getMappedStatement(statement);
+        return (T)("你被代理了！"+"\n方法: "+statement + "\n入参: :"+parameter + "\n待执行的SQL: "+mappedStatement.getSql());
     }
 
     @Override
     public <T> T getMapper(Class<T> type) {
-        return mapperRegister.getMapper(type,this);
+       return configuration.getMapper(type,this);
     }
+
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
 }

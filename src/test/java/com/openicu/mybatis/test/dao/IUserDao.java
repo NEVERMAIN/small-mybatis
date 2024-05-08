@@ -1,5 +1,7 @@
 package com.openicu.mybatis.test.dao;
 
+import com.openicu.mybatis.test.po.User;
+
 /**
  * @description:
  * @author: 云奇迹
@@ -7,8 +9,6 @@ package com.openicu.mybatis.test.dao;
  */
 public interface IUserDao {
 
-    String queryUserName(String uId);
-
-    String queryUserAge(String uId);
+    String queryUserInfoById(String uId);
 
 }

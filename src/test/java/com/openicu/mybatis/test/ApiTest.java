@@ -1,14 +1,20 @@
 package com.openicu.mybatis.test;
 
+import cn.hutool.json.JSONUtil;
 import com.openicu.mybatis.binding.MapperProxyFactory;
 import com.openicu.mybatis.binding.MapperRegister;
+import com.openicu.mybatis.io.Resources;
 import com.openicu.mybatis.session.SqlSession;
+import com.openicu.mybatis.session.SqlSessionFactory;
+import com.openicu.mybatis.session.SqlSessionFactoryBuilder;
 import com.openicu.mybatis.session.defaults.DefaultSqlSessionFactory;
 import com.openicu.mybatis.test.dao.IUserDao;
+import com.openicu.mybatis.test.po.User;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Reader;
 import java.util.HashMap;
 
 /**
@@ -23,19 +29,16 @@ public class ApiTest {
     @Test
     public void test_MapperProxyFactory() {
 
-        // 1.注册 Mapper
-        MapperRegister mapperRegister = new MapperRegister();
-        mapperRegister.addMapper("com.openicu.mybatis.test.dao");
+        // 1.从 SqlSessionFactory 中获取 SqlSession
+        Reader reader = Resources.getResourceAsReader("mybatis-config-datasource.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
 
-        // 2.从 sqlSession 工厂获取 Session
-        DefaultSqlSessionFactory factory = new DefaultSqlSessionFactory(mapperRegister);
-        SqlSession sqlSession = factory.openSession();
-
-        // 3.获取映射器对象
+        // 2.获取映射器对象
         IUserDao userDao = sqlSession.getMapper(IUserDao.class);
 
-        // 4.测试验证
-        String res = userDao.queryUserName("10001");
-        System.out.println(res);
+        // 3. 测试验证
+        String res = userDao.queryUserInfoById("10001");
+        logger.info("测试结果:{}",res);
     }
 }

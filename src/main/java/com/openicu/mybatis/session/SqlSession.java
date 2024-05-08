@@ -33,6 +33,11 @@ public interface SqlSession {
      */
     <T> T getMapper(Class<T> type);
 
+    /**
+     * 得到配置类
+     * @return
+     */
+    Configuration getConfiguration();
 
 
 }
