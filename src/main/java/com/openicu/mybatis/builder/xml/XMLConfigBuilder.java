@@ -1,21 +1,23 @@
 package com.openicu.mybatis.builder.xml;
 
 import com.openicu.mybatis.builder.BaseBuilder;
+import com.openicu.mybatis.datasource.DataSourceFactory;
 import com.openicu.mybatis.io.Resources;
+import com.openicu.mybatis.mapping.BoundSql;
+import com.openicu.mybatis.mapping.Environment;
 import com.openicu.mybatis.mapping.MappedStatement;
 import com.openicu.mybatis.mapping.SqlCommandType;
 import com.openicu.mybatis.session.Configuration;
+import com.openicu.mybatis.transaction.TransactionFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.InputSource;
 
+import javax.sql.DataSource;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,12 +48,49 @@ public class XMLConfigBuilder extends BaseBuilder {
      */
     public Configuration parse() {
         try {
+            // 环境
+            environmentElement(root.element("environments"));
             // 解析映射器
             mapperElement(root.element("mappers"));
         } catch (Exception e) {
             throw new RuntimeException("Error parsing SQL Mapper Configuration. Cause:" + e, e);
         }
         return configuration;
+    }
+
+    /**
+     *
+     * @param context
+     */
+    public void environmentElement(Element context) throws Exception{
+        String environment = context.attributeValue("default");
+
+        List<Element> environmentList = context.elements("environment");
+        for (Element element : environmentList) {
+            String id = element.attributeValue("id");
+            if(environment.equals(id)){
+                // 事务管理器
+                TransactionFactory transactionFactory = (TransactionFactory) typeAliasRegistry.resolveAlias(element.element("transactionManager").attributeValue("type")).newInstance();
+
+                // 数据源
+                Element dataSourceElement = element.element("dataSource");
+                DataSourceFactory dataSourceFactory = (DataSourceFactory) typeAliasRegistry.resolveAlias(dataSourceElement.attributeValue("type")).newInstance();
+                List<Element> propertyList = dataSourceElement.elements("property");
+                Properties props = new Properties();
+                for (Element property : propertyList) {
+                    props.setProperty(property.attributeValue("name"),property.attributeValue("value"));
+                }
+                dataSourceFactory.setProperties(props);
+                DataSource dataSource = dataSourceFactory.getDataSource();
+
+                // 构建环境
+                Environment.Builder builder = new Environment.Builder()
+                        .id(id)
+                        .transactionFactory(transactionFactory)
+                        .datasource(dataSource);
+                configuration.setEnvironment(builder.build());
+            }
+        }
     }
 
     private void mapperElement(Element mappers) throws DocumentException, ClassNotFoundException {
@@ -88,7 +127,10 @@ public class XMLConfigBuilder extends BaseBuilder {
                 String msId = namespace + "." + id;
                 String nodeName = node.getName();
                 SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
-                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType, parameterType, resultType, sql, parameter).build();
+
+                BoundSql boundSql = new BoundSql(sql, parameter, parameterType, resultType);
+
+                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType,boundSql).build();
                 // 添加解析 SQL
                 configuration.addMapperStatement(mappedStatement);
             }

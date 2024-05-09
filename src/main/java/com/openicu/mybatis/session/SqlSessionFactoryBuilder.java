@@ -6,7 +6,7 @@ import com.openicu.mybatis.session.defaults.DefaultSqlSessionFactory;
 import java.io.Reader;
 
 /**
- * @description:
+ * @description: 构建 SqlSessionFactory 的工厂
  * @author: 云奇迹
  * @date: 2024/5/8
  */

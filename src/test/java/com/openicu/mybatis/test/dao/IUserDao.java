@@ -9,6 +9,6 @@ import com.openicu.mybatis.test.po.User;
  */
 public interface IUserDao {
 
-    String queryUserInfoById(String uId);
+    User queryUserInfoById(Long uId);
 
 }

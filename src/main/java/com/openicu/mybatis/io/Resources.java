@@ -41,7 +41,6 @@ public class Resources {
         };
     }
 
-
     /**
      * 加载类
      */
