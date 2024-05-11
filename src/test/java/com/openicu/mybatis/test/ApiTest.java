@@ -1,9 +1,6 @@
 package com.openicu.mybatis.test;
 
 import cn.hutool.json.JSONUtil;
-import com.mysql.cj.jdbc.Driver;
-import com.openicu.mybatis.binding.MapperProxyFactory;
-import com.openicu.mybatis.binding.MapperRegister;
 import com.openicu.mybatis.builder.xml.XMLConfigBuilder;
 import com.openicu.mybatis.io.Resources;
 import com.openicu.mybatis.session.Configuration;
@@ -11,7 +8,6 @@ import com.openicu.mybatis.session.SqlSession;
 import com.openicu.mybatis.session.SqlSessionFactory;
 import com.openicu.mybatis.session.SqlSessionFactoryBuilder;
 import com.openicu.mybatis.session.defaults.DefaultSqlSession;
-import com.openicu.mybatis.session.defaults.DefaultSqlSessionFactory;
 import com.openicu.mybatis.test.dao.IUserDao;
 import com.openicu.mybatis.test.po.User;
 import org.junit.Test;
@@ -20,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
 
 /**
  * @description:
@@ -29,11 +24,10 @@ import java.util.HashMap;
  */
 public class ApiTest {
 
-    private Logger logger = LoggerFactory.getLogger(ApiTest.class);
+    private final Logger logger = LoggerFactory.getLogger(ApiTest.class);
 
     @Test
     public void test_MapperProxyFactory() {
-
 
         // 1.从 SqlSessionFactory 中获取 SqlSession
         Reader reader = Resources.getResourceAsReader("mybatis-config-datasource.xml");
@@ -62,5 +56,22 @@ public class ApiTest {
         Object[] req = {1L};
         Object res = sqlSession.selectOne("com.openicu.mybatis.test.dao.IUserDao.queryUserInfoById", req);
         logger.info("测试结果：{}", JSONUtil.toJsonStr(res));
+    }
+
+
+    @Test
+    public void test_SqlSessionFactory(){
+        // 1.从 SqlSessionFactory 中获取 SqlSession
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader("mybatis-config-datasource.xml"));
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+
+        // 2.获取映射器
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+
+        // 3.测试验证
+        for (int i = 0; i < 50; i++) {
+            User user = userDao.queryUserInfoById(1L);
+            logger.info("测试结果:{}",JSONUtil.toJsonStr(user));
+        }
     }
 }

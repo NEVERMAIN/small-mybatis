@@ -2,6 +2,8 @@ package com.openicu.mybatis.session;
 
 import com.openicu.mybatis.binding.MapperRegister;
 import com.openicu.mybatis.datasource.druid.DruidDataSourceFactory;
+import com.openicu.mybatis.datasource.pooled.PooledDataSourceFactory;
+import com.openicu.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import com.openicu.mybatis.mapping.Environment;
 import com.openicu.mybatis.mapping.MappedStatement;
 import com.openicu.mybatis.transaction.jdbc.JdbcTransactionFactory;
@@ -40,6 +42,9 @@ public class Configuration {
     public Configuration() {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+
+        typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
     }
 
     public <T> void addMappers(String packageName){
