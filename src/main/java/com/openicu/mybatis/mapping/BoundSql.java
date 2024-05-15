@@ -9,9 +9,21 @@ import java.util.Map;
  */
 public class BoundSql {
 
+    /**
+     * 绑定的 SQL
+     */
     private String sql;
+    /**
+     * 绑定的参数
+     */
     private Map<Integer,String> parameterMapping;
+    /**
+     * 参数的类型
+     */
     private String parameterType;
+    /**
+     * 结果的类型
+     */
     private String resultType;
 
     public BoundSql(String sql, Map<Integer, String> parameterMapping, String parameterType, String resultType) {

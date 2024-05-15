@@ -12,10 +12,17 @@ import java.util.Map;
 public class MappedStatement {
 
     private Configuration configuration;
-
+    /**
+     * 映射语句 id
+     */
     private String id;
+    /**
+     * SQL 语句的类型
+     */
     private SqlCommandType sqlCommandType;
-
+    /**
+     * 要执行的 SQL 语句
+     */
     private BoundSql boundSql;
 
     MappedStatement(){
@@ -23,7 +30,7 @@ public class MappedStatement {
     }
 
     /**
-     * 建造者
+     * 建造者模式
      */
     public static class Builder{
 

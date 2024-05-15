@@ -42,22 +42,6 @@ public class ApiTest {
         logger.info("测试结果:{}",JSONUtil.toJsonStr(user));
     }
 
-    @Test
-    public void test_selectOne() throws IOException {
-        // 解析 XML
-        Reader reader = Resources.getResourceAsReader("mybatis-config-datasource.xml");
-        XMLConfigBuilder xmlConfigBuilder = new XMLConfigBuilder(reader);
-        Configuration configuration = xmlConfigBuilder.parse();
-
-        // 获取 DefaultSqlSession
-        SqlSession sqlSession = new DefaultSqlSession(configuration);
-
-        // 执行查询：默认是一个集合参数
-        Object[] req = {1L};
-        Object res = sqlSession.selectOne("com.openicu.mybatis.test.dao.IUserDao.queryUserInfoById", req);
-        logger.info("测试结果：{}", JSONUtil.toJsonStr(res));
-    }
-
 
     @Test
     public void test_SqlSessionFactory(){
@@ -74,4 +58,5 @@ public class ApiTest {
             logger.info("测试结果:{}",JSONUtil.toJsonStr(user));
         }
     }
+
 }

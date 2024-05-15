@@ -29,7 +29,6 @@ public class JdbcTransaction  implements Transaction {
     }
 
     public JdbcTransaction(Connection connection) throws SQLException {
-
         this.connection = connection;
     }
 
